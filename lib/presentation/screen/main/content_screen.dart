@@ -1,6 +1,15 @@
+import 'package:fiqah/data/models/content_model.dart';
+import 'package:fiqah/data/services/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ContentScreen extends StatelessWidget {
+// Provider untuk mengambil konten berdasarkan judul sub-menu
+final contentProvider =
+    FutureProvider.family<Content?, String>((ref, subMenuTitle) async {
+  return DatabaseHelper().getContentBySubMenuTitle(subMenuTitle);
+});
+
+class ContentScreen extends ConsumerWidget {
   final String title;
   final String category;
 
@@ -11,20 +20,27 @@ class ContentScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Memantau provider konten dengan judul sub-menu sebagai parameter
+    final asyncContent = ref.watch(contentProvider(title));
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(
+                height: kToolbarHeight +
+                    MediaQuery.of(context).padding.top), // Spacer for AppBar
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -35,7 +51,7 @@ class ContentScreen extends StatelessWidget {
                     Icons.info_outline,
                     color: Theme.of(context).primaryColor,
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Kategori: $category',
@@ -48,51 +64,50 @@ class ContentScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text(
-              'Konten Materi',
+              'Materi Pembahasan',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey[800]
-                      : Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withOpacity(0.05),
                       blurRadius: 10,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                child: SingleChildScrollView(
-                  child: Text(
-                    'Materi tentang "$title" akan ditampilkan di sini.\n\n'
-                    'Ini adalah tempat di mana konten fiqih pernikahan akan dijelaskan secara detail. '
-                    'Anda dapat menambahkan konten yang sesuai dengan setiap topik yang telah didefinisikan.\n\n'
-                    'Konten dapat berupa:\n'
-                    '• Penjelasan dalil-dalil Al-Quran dan Hadits\n'
-                    '• Penjelasan hukum fiqih\n'
-                    '• Contoh-contoh praktis\n'
-                    '• Tips dan panduan\n\n'
-                    'Aplikasi ini dapat dikembangkan lebih lanjut dengan menambahkan database konten yang lebih lengkap.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.6,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white.withOpacity(0.9)
-                          : Colors.grey[700],
-                    ),
-                  ),
+                child: asyncContent.when(
+                  data: (contentData) {
+                    if (contentData == null) {
+                      return const Center(
+                          child: Text('Konten tidak ditemukan.'));
+                    }
+                    return SingleChildScrollView(
+                      child: Text(
+                        contentData.content,
+                        style: TextStyle(
+                          fontSize: 16,
+                          height: 1.6,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        ),
+                      ),
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (err, stack) => Center(child: Text('Error: $err')),
                 ),
               ),
             ),

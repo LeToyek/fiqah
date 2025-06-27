@@ -1,22 +1,7 @@
+import 'package:fiqah/presentation/screen/main/content_screen.dart';
 import 'package:flutter/material.dart';
 
 // Placeholder untuk ContentScreen, ganti dengan implementasi Anda
-class ContentScreen extends StatelessWidget {
-  final String title;
-  final String category;
-  const ContentScreen({super.key, required this.title, required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text('Konten untuk "$title" dari kategori "$category"'),
-      ),
-    );
-  }
-}
-
 
 class SubMenuScreen extends StatelessWidget {
   final String categoryTitle;

@@ -1,5 +1,10 @@
-import 'package:fiqah/presentation/screen/main/main_menu_screen.dart';
+import 'dart:ui'; // Diperlukan untuk ImageFilter.blur
 import 'package:flutter/material.dart';
+
+// TODO: Pastikan Anda memiliki file ini atau ganti dengan halaman tujuan Anda
+import 'package:fiqah/presentation/screen/main/main_menu_screen.dart';
+
+// Halaman placeholder jika MainMenuScreen tidak ada
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -18,13 +23,17 @@ class _LoginScreenState extends State<LoginScreen>
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // State for password visibility
+  // State for password visibility and loading
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
   // Dummy user data for validation
   static const String _dummyEmail = 'test@example.com';
   static const String _dummyPassword = 'password123';
+
+  // get the height of the screen
+  double get _screenHeight => MediaQuery.of(context).size.height;
+  // get the width of the screen
 
   @override
   void initState() {
@@ -95,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen>
       // On failure, show a themed error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Invalid email or password. Please try again.'),
+          content: Text('Email atau password salah. Silakan coba lagi.'),
           backgroundColor: Colors.black54,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -115,53 +124,93 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
-        body: Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.green.shade700, Colors.green.shade900],
-        ),
-      ),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 80),
-                    _buildHeaderIcon(),
-                    SizedBox(height: 20),
-                    _buildTitle(),
-                    _buildSubtitle(),
-                    SizedBox(height: 40),
-                    _buildLoginForm(),
-                    SizedBox(height: 30),
-                    _buildLoginButton(),
-                    SizedBox(height: 60),
-                  ],
-                ),
-              ),
+      // Menggunakan Stack untuk menumpuk background dan konten
+      body: Stack(
+        children: [
+          // 1. Background Image
+          _buildBackgroundImage(),
+
+          // 2. Konten Login
+          SafeArea(
+            child: LayoutBuilder(
+              builder:
+                  (BuildContext context, BoxConstraints viewportConstraints) {
+                // LayoutBuilder memberikan kita ukuran area yang aman (setelah status bar, dll.)
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      // Kita paksa konten di dalam SingleChildScrollView untuk memiliki
+                      // tinggi minimal setinggi layar yang terlihat.
+                      minHeight: viewportConstraints.maxHeight,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: SlideTransition(
+                          position: _slideAnimation,
+                          child: Column(
+                            // SEKARANG, properti ini akan bekerja karena Column
+                            // memiliki tinggi yang pasti (setinggi layar).
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // HANYA FORM DAN TOMBOL
+                              _buildGlassmorphicForm(),
+                              const SizedBox(height: 30),
+                              _buildLoginButton(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackgroundImage() {
+    // Container untuk gambar background yang menutupi seluruh layar
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          // TODO: Ganti dengan path aset gambar lokal Anda (contoh: 'assets/background.jpg')
+          // Pastikan untuk menambahkan aset di pubspec.yaml
+          image: AssetImage('assets/background.png'),
+          fit: BoxFit.cover, // Memastikan gambar menutupi seluruh area
         ),
       ),
-    ));
+    );
+  }
+
+  Widget _buildGlassmorphicForm() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: Container(
+          padding: const EdgeInsets.all(24.0),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1.5,
+            ),
+          ),
+          child: _buildLoginForm(),
+        ),
+      ),
+    );
   }
 
   Widget _buildHeaderIcon() {
-    // A decorative icon at the top
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -177,9 +226,8 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildTitle() {
-    // The main title of the screen
     return Text(
-      'Fiqih Pernikahan', // Marriage Fiqh
+      'Fiqih Pernikahan',
       style: TextStyle(
         fontFamily: 'Serif',
         fontSize: 36,
@@ -187,8 +235,8 @@ class _LoginScreenState extends State<LoginScreen>
         color: Colors.white,
         shadows: [
           Shadow(
-            blurRadius: 10,
-            color: Colors.black.withOpacity(0.3),
+            blurRadius: 15,
+            color: Colors.black.withOpacity(0.5),
             offset: Offset(0, 3),
           ),
         ],
@@ -198,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   Widget _buildSubtitle() {
     return Text(
-      'Sign in to continue',
+      'Masuk untuk melanjutkan',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 16,
@@ -208,7 +256,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildLoginForm() {
-    // The Form widget that contains our input fields
     return Form(
       key: _formKey,
       child: Column(
@@ -222,22 +269,20 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildEmailField() {
-    // TextFormField for email input
     return TextFormField(
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       style: TextStyle(color: Colors.white),
       decoration: _buildInputDecoration(
-        hintText: 'Enter your email',
+        hintText: 'Masukkan email Anda',
         prefixIcon: Icons.email_outlined,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter your email';
+          return 'Mohon masukkan email Anda';
         }
-        // Using a simple regex for email validation
         if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-          return 'Please enter a valid email address';
+          return 'Mohon masukkan alamat email yang valid';
         }
         return null;
       },
@@ -245,13 +290,12 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildPasswordField() {
-    // TextFormField for password input
     return TextFormField(
       controller: _passwordController,
-      obscureText: !_isPasswordVisible, // Hides the password
+      obscureText: !_isPasswordVisible,
       style: TextStyle(color: Colors.white),
       decoration: _buildInputDecoration(
-        hintText: 'Enter your password',
+        hintText: 'Masukkan password Anda',
         prefixIcon: Icons.lock_outline,
         suffixIcon: IconButton(
           icon: Icon(
@@ -269,10 +313,10 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter your password';
+          return 'Mohon masukkan password Anda';
         }
         if (value.length < 8) {
-          return 'Password must be at least 8 characters long';
+          return 'Password minimal 8 karakter';
         }
         return null;
       },
@@ -284,23 +328,21 @@ class _LoginScreenState extends State<LoginScreen>
     required IconData prefixIcon,
     Widget? suffixIcon,
   }) {
-    // A helper method for consistent input field styling
     return InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-        prefixIcon: Icon(prefixIcon, color: Colors.white.withOpacity(0.7)),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+        prefixIcon: Icon(prefixIcon, color: Colors.white.withOpacity(0.8)),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
+        fillColor: Colors.black.withOpacity(0.2), // Latar belakang input field
         contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        // Consistent border styling for all states
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -319,7 +361,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildLoginButton() {
-    // The main login button, now themed in green
     return Container(
       width: double.infinity,
       height: 56,
@@ -328,9 +369,9 @@ class _LoginScreenState extends State<LoginScreen>
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 15,
-            offset: Offset(0, 5),
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 20,
+            offset: Offset(0, 10),
           ),
         ],
       ),
@@ -338,19 +379,19 @@ class _LoginScreenState extends State<LoginScreen>
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: _isLoading ? null : _login, // Disable button when loading
+          onTap: _isLoading ? null : _login,
           child: Center(
             child: _isLoading
                 ? CircularProgressIndicator(
                     valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.green.shade800),
+                        AlwaysStoppedAnimation<Color>(Colors.blueGrey.shade800),
                   )
                 : Text(
                     'LOGIN',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green.shade900,
+                      color: Colors.blueGrey.shade900,
                       letterSpacing: 1.5,
                     ),
                   ),
