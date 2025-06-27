@@ -1,43 +1,50 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Flutter/Dart stuff
 .dart_tool/
+.packages
+.pub/
+build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+.melos_tool/
+.dart_tool/
+.flutter-*
 
-# Symbolication related
-app.*.symbols
+# IDEs
+.idea/
+.vscode/
+*.iml
 
-# Obfuscation related
-app.*.map.json
+# OS
+.DS_Store
+*.swp
+Thumbs.db
 
-# Android Studio will place build artifacts here
+# Android
+/android/local.properties
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# iOS
+/ios/Flutter/.last_build_id
+/ios/Pods
+/ios/Runner.xcworkspace
+/ios/.symlinks
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/ServiceDefinitions.json
+
+# Web build
+build/web/
+
+# Firebase
+.firebase/
+firebase-debug.log
+
+# Netlify (if using CLI)
+.netlify/
+
+# Symbolic links
+*.lnk
