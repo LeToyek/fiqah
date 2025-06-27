@@ -1,11 +1,36 @@
-import 'package:fiqah/data/menu_category_dto.dart';
-import 'package:fiqah/presentation/screen/main/content_screen.dart';
 import 'package:flutter/material.dart';
 
-class SubMenuScreen extends StatelessWidget {
-  final MenuCategory category;
+// Placeholder untuk ContentScreen, ganti dengan implementasi Anda
+class ContentScreen extends StatelessWidget {
+  final String title;
+  final String category;
+  const ContentScreen({super.key, required this.title, required this.category});
 
-  const SubMenuScreen({Key? key, required this.category}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Text('Konten untuk "$title" dari kategori "$category"'),
+      ),
+    );
+  }
+}
+
+
+class SubMenuScreen extends StatelessWidget {
+  final String categoryTitle;
+  final List<String> subMenus;
+  final List<Color> gradient;
+  final IconData icon;
+
+  const SubMenuScreen({
+    Key? key,
+    required this.categoryTitle,
+    required this.subMenus,
+    required this.gradient,
+    required this.icon,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,32 +63,33 @@ class SubMenuScreen extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(12, 24, 24, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: category.gradient,
+          colors: gradient, // Menggunakan gradient yang diterima
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
               ),
               Icon(
-                category.icon,
+                icon, // Menggunakan icon yang diterima
                 size: 32,
                 color: Colors.white,
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  category.title,
-                  style: TextStyle(
+                  categoryTitle, // Menggunakan title yang diterima
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -72,12 +98,15 @@ class SubMenuScreen extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
-          Text(
-            'Pilih materi yang ingin dipelajari',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.8),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Text(
+              'Pilih materi yang ingin dipelajari',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white.withOpacity(0.8),
+              ),
             ),
           ),
         ],
@@ -87,17 +116,17 @@ class SubMenuScreen extends StatelessWidget {
 
   Widget _buildSubMenuList(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.all(24),
-      itemCount: category.subMenus.length,
+      padding: const EdgeInsets.all(24),
+      itemCount: subMenus.length,
       itemBuilder: (context, index) {
-        return _buildSubMenuItem(context, category.subMenus[index], index);
+        return _buildSubMenuItem(context, subMenus[index], index);
       },
     );
   }
 
   Widget _buildSubMenuItem(BuildContext context, String title, int index) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: Theme.of(context).brightness == Brightness.dark
@@ -105,9 +134,9 @@ class SubMenuScreen extends StatelessWidget {
             : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.07),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -121,13 +150,13 @@ class SubMenuScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => ContentScreen(
                   title: title,
-                  category: category.title,
+                  category: categoryTitle,
                 ),
               ),
             );
           },
           child: Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Row(
               children: [
                 Container(
@@ -135,14 +164,14 @@ class SubMenuScreen extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: category.gradient,
+                      colors: gradient,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
                     child: Text(
                       '${index + 1}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -150,7 +179,7 @@ class SubMenuScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Text(
                     title,
