@@ -160,6 +160,8 @@ class _LoginScreenState extends State<LoginScreen>
                               _buildGlassmorphicForm(),
                               const SizedBox(height: 30),
                               _buildLoginButton(),
+                              const SizedBox(height: 20),
+                              _buildLoginGuestButton(),
                             ],
                           ),
                         ),
@@ -395,6 +397,48 @@ class _LoginScreenState extends State<LoginScreen>
                       letterSpacing: 1.5,
                     ),
                   ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginGuestButton() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            // Aksi untuk login sebagai tamu
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainMenuScreen()),
+            );
+          },
+          child: Center(
+            child: Text(
+              'Login Sebagai Tamu',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey.shade900,
+                letterSpacing: 1.5,
+              ),
+            ),
           ),
         ),
       ),

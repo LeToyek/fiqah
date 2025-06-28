@@ -24,6 +24,7 @@ class ContentScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncContent = ref.watch(contentProvider(title));
     final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
 
     return Scaffold(
       // extendBodyBehindAppBar: true,
@@ -59,6 +60,21 @@ class ContentScreen extends ConsumerWidget {
                     h3: textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                     listBullet: textTheme.bodyLarge,
+                    // Gaya untuk teks di dalam kutipan (blockquote)
+                    blockquote: textTheme.bodyLarge?.copyWith(
+                      color:
+                          theme.textTheme.bodyMedium?.color?.withOpacity(0.9),
+                    ),
+
+                    // Dekorasi untuk kotak di belakang kutipan
+                    blockquoteDecoration: BoxDecoration(
+                      color: theme.colorScheme.primary
+                          .withOpacity(0.1), // Warna latar adaptif
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+
+                    // Padding di dalam kotak kutipan
+                    blockquotePadding: const EdgeInsets.all(16),
                   ),
                 ),
                 // =======================================================
